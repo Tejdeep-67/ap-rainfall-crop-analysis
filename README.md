@@ -3,10 +3,10 @@
 Exploratory data analysis of 117 years of rainfall (1901-2017) and 18 years of district crop data (1997-2014)
 for Andhra Pradesh, done in Python (pandas, matplotlib, seaborn, scipy).
 
-**Report (no code, just results):** https://tejdeep-67.github.io/ap-rainfall-crop-analysis/
-**Notebook:** [notebooks/ap_rainfall_crop_eda.ipynb](notebooks/ap_rainfall_crop_eda.ipynb)
+**Live data story:** https://tejdeep-ap-rainfall.netlify.app
+**Notebook:** [notebooks/ap_rainfall_crop_eda.ipynb](notebooks/ap_rainfall_crop_eda.ipynb) (also on the site as [notebook.html](https://tejdeep-ap-rainfall.netlify.app/notebook.html))
 
-![rainfall vs yield](images/rain_vs_yield.png)
+![data story](images/story_hero.png)
 
 ## Problem
 
@@ -23,6 +23,8 @@ In AP, farming conversations always come back to the monsoon. I wanted to check 
 |---|---|---|
 | Sub-divisional monthly rainfall, 1901-2017 | India Meteorological Department, published on [data.gov.in](https://www.data.gov.in/resource/sub-divisional-monthly-rainfall-1901-2017) (Govt. Open Data License - India) | 234 (2 sub-divisions x 117 years) |
 | District-wise season-wise crop production, 1997-2014 | Ministry of Agriculture & Farmers Welfare via [data.gov.in](https://www.data.gov.in/catalog/district-wise-season-wise-crop-production-statistics-0), also mirrored on [Kaggle](https://www.kaggle.com/datasets/abhinand05/crop-production-in-india) | 9,500 AP rows |
+
+District boundaries for the map: Census 2011 districts by the [DataMeet India community](https://github.com/datameet/maps), CC BY 4.0.
 
 The rainfall CSV is in `data/raw/`. The full all-India crop file is about 15 MB, so only the AP part is in the repo
 (`data/ap_crop_production.csv`, made by `scripts/prepare_crop_data.py`).
@@ -62,6 +64,27 @@ So irrigation is what separates the two regions. Rain-fed Rayalaseema carries th
 |---|---|
 | ![](images/annual_trend.png) | ![](images/district_share.png) |
 
+## The web version (data story)
+
+Besides the notebook, I wanted a version that someone who doesn't read code can follow, like the scrolling
+articles newspapers make. It's in `docs/` and is just HTML, CSS and D3, no framework.
+
+- As you scroll, the text cards on the left move the chart on the right through steps: the monthly pattern,
+  117 years of annual rain with the trend line, deficient years, a district map and rain vs yield.
+- The **district map** is a choropleth of the 13 AP districts (rice, groundnut and chilli share). Boundaries are
+  Census 2011 districts from DataMeet (CC BY 4.0), cut down to today's AP and simplified by
+  `scripts/build_district_map.py`.
+- The charts read `docs/data/story.json`, which `scripts/build_story_data.py` makes from the same CSVs using the
+  same steps as the notebook, so the numbers on the site and in the notebook are the same.
+- On phones the chart sticks to the top of the screen and the text scrolls over it. Animations are switched off
+  if the phone/PC has "reduce motion" turned on.
+
+| District map | Rain vs groundnut yield |
+|---|---|
+| ![](images/story_map.png) | ![](images/story_yield.png) |
+
+<img src="images/story_mobile.png" width="280" alt="data story on a phone">
+
 ## How to run
 
 ```bash
@@ -73,6 +96,16 @@ jupyter notebook notebooks/ap_rainfall_crop_eda.ipynb
 
 To rebuild the AP crop file from scratch, download `crop_production.csv` from the Kaggle link above into
 `data/raw/` and run `python scripts/prepare_crop_data.py`.
+
+To rebuild the web version's data and view it locally:
+
+```bash
+python scripts/build_story_data.py      # docs/data/story.json
+python scripts/build_district_map.py    # docs/data/ap_districts.geojson (downloads the boundaries once)
+cd docs && python -m http.server 8000   # open http://localhost:8000
+```
+
+The site is deployed on Netlify straight from the `docs/` folder (see `netlify.toml`), no build step.
 
 ## Limitations
 
