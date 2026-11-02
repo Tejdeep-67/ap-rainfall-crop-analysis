@@ -1,0 +1,15 @@
+# Netlify settings. docs/ is plain static files (the data story + the exported notebook),
+# so there is no build step. story.json and the map file are made by the scripts in scripts/.
+[build]
+  publish = "docs"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
