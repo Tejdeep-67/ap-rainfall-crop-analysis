@@ -5,3 +5,5 @@ venv/
 data/raw/crop_production.csv
 *.pyc
 .DS_Store
+data/raw/districts_2011/
+.netlify/
