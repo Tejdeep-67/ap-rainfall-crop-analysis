@@ -1,0 +1,7 @@
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+venv/
+data/raw/crop_production.csv
+*.pyc
+.DS_Store
