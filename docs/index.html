@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When the Monsoon Decides the Harvest | AP Rainfall &amp; Crops</title>
+  <meta name="description" content="A data story on 117 years of Andhra Pradesh rainfall and what it means for groundnut and rice. IMD and data.gov.in data, analysed in Python.">
+  <meta name="theme-color" content="#f5eee2">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="story.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" defer></script>
+  <script src="story.js" defer></script>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+
+  <header class="hero">
+    <canvas id="rain" aria-hidden="true"></canvas>
+    <div class="hero-inner">
+      <p class="kicker">Andhra Pradesh &middot; 1901&ndash;2017</p>
+      <h1>When the monsoon decides the harvest</h1>
+      <p class="dek">117 years of rainfall, 18 years of district crop data, and one question: does the rain really make or break a farmer's year in AP? It depends a lot on which side of the state you live in.</p>
+      <p class="byline">By <strong>Tejdeep Kellampalli</strong> &middot; data from IMD and data.gov.in &middot; analysis in Python</p>
+    </div>
+    <svg class="fields" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 120 C 220 70, 420 150, 700 110 S 1180 60, 1440 100 L1440 220 L0 220 Z" fill="#b8673f" opacity=".55"/>
+      <path d="M0 150 C 260 110, 520 190, 820 150 S 1240 120, 1440 140 L1440 220 L0 220 Z" fill="#c98f2e" opacity=".5"/>
+      <path d="M0 180 C 300 150, 600 205, 900 178 S 1260 165, 1440 175 L1440 220 L0 220 Z" fill="#f5eee2"/>
+    </svg>
+    <a class="scroll-cue" href="#s-months" aria-label="Start reading"><span></span></a>
+  </header>
+
+  <main>
+    <section class="intro prose">
+      <p class="dropcap">Andhra Pradesh is really two climates sharing one name. <span class="tag coastal">Coastal Andhra</span> runs along the Bay of Bengal from Srikakulam to Nellore, with the Godavari and Krishna deltas in the middle. <span class="tag rayala">Rayalaseema</span> (Kurnool, Anantapur, Kadapa and Chittoor) sits inland, in the rain shadow of the Western Ghats.</p>
+      <p>I used the India Meteorological Department's sub-division rainfall series (1901&ndash;2017) and the district-wise crop production statistics (1997&ndash;2014) to look at how different they are, and whether that difference shows up in the fields.</p>
+    </section>
+
+    <!-- 1: monthly pattern -->
+    <section class="scrolly" id="s-months">
+      <div class="graphic"><figure class="chart-frame">
+        <figcaption><span class="fig-no">Fig. 1</span> Average rainfall by month, 1901&ndash;2017 (mm)</figcaption>
+        <div class="chart" id="g-months"></div>
+        <div class="legend"><span class="key coastal"></span>Coastal AP <span class="key rayala"></span>Rayalaseema</div>
+      </figure></div>
+      <div class="steps">
+        <div class="step" data-step="0"><p>On average, coastal AP gets <strong class="num" data-to="1050">1050</strong> mm of rain a year. Rayalaseema gets only <strong class="num" data-to="765">765</strong> mm, about a quarter less.</p></div>
+        <div class="step" data-step="1"><p>Most of India waits for the <strong>south-west monsoon</strong> from June to September. Here it brings less than you'd expect: <span id="sw-c"></span> of the year's rain on the coast and only <span id="sw-r"></span> in Rayalaseema.</p></div>
+        <div class="step" data-step="2"><p>The rest comes from the <strong>north-east monsoon</strong> and the cyclones of October&ndash;December. October is actually the coast's wettest month (<strong>184 mm</strong>), and Rayalaseema gets <span id="ne-r"></span> of its rain in these three months. So June&ndash;September alone doesn't tell you if it was a good year.</p></div>
+      </div>
+    </section>
+
+    <!-- 2: long series -->
+    <section class="scrolly" id="s-years">
+      <div class="graphic"><figure class="chart-frame">
+        <figcaption><span class="fig-no">Fig. 2</span> <span id="years-title">Annual rainfall, Coastal AP</span> (mm)</figcaption>
+        <div class="chart" id="g-years"></div>
+        <div class="legend" id="years-legend"></div>
+      </figure></div>
+      <div class="steps">
+        <div class="step" data-step="0"><p>Every bar is one year. The swings are big: a typical year is <strong>18&ndash;20%</strong> above or below the average.</p></div>
+        <div class="step" data-step="1"><p>Is it getting wetter or drier? The 10-year average wanders around but the straight trend line is almost flat: about <strong id="trend-c"></strong> mm per decade, with p = <span id="trend-cp"></span>. That's not a real trend, just noise.</p></div>
+        <div class="step" data-step="2"><p>Rayalaseema looks the same, lower down. Its trend (<span id="trend-r"></span> mm per decade, p = <span id="trend-rp"></span>) isn't significant either.</p></div>
+        <div class="step" data-step="3"><p>What matters more is how often a year goes badly. Using the IMD rule (more than 20% below normal), Rayalaseema had <strong class="terra"><span class="num" data-to="18">18</span> deficient years</strong> in 117. The coast had 12, with 2002 the driest (703 mm).</p></div>
+      </div>
+    </section>
+
+    <!-- 3: map -->
+    <section class="scrolly" id="s-map">
+      <div class="graphic"><figure class="chart-frame">
+        <figcaption><span class="fig-no">Fig. 3</span> <span id="map-title">The two regions</span></figcaption>
+        <div class="chart map" id="g-map"></div>
+        <div class="legend" id="map-legend"></div>
+      </figure></div>
+      <div class="steps">
+        <div class="step" data-step="0"><p>These are the 13 districts in the crop data. Nine are coastal and four are in Rayalaseema.</p></div>
+        <div class="step" data-step="1"><p><strong>Rice</strong> is AP's biggest crop by area (about 24.5 lakh hectares a year). The two Godavari districts, Krishna and Guntur grow <strong class="num" data-to="63.5" data-dec="1">63.5</strong>% of it, almost all on canal water from the deltas.</p></div>
+        <div class="step" data-step="2"><p><strong>Groundnut</strong> is second (about 13.8 lakh ha) and it is a Rayalaseema crop. Anantapur alone produced <strong>39%</strong> of the state's groundnut, mostly rain-fed.</p></div>
+        <div class="step" data-step="3"><p>And since I'm from Guntur, I had to check: Guntur grew <strong class="num" data-to="57.7" data-dec="1">57.7</strong>% of all of AP's dry chillies between 1997 and 2014.</p></div>
+      </div>
+    </section>
+
+    <!-- 4: rain vs yield -->
+    <section class="scrolly" id="s-yield">
+      <div class="graphic"><figure class="chart-frame">
+        <figcaption><span class="fig-no">Fig. 4</span> <span id="yield-title">Groundnut yield vs June&ndash;September rain, Rayalaseema</span></figcaption>
+        <div class="chart" id="g-yield"></div>
+        <div class="legend" id="yield-legend"></div>
+      </figure></div>
+      <div class="steps">
+        <div class="step" data-step="0"><p>Now the main question. Each dot is one year of kharif groundnut in the four Rayalaseema districts. The more it rained from June to September, the more groundnut each hectare gave: <strong>r = 0.77</strong> (p &lt; 0.001).</p></div>
+        <div class="step" data-step="1"><p>Look at 2006, 2007 and 2008. With about 340 mm of monsoon rain in 2006 and 2008, farmers got about <strong>0.23 t/ha</strong>. In 2007, with 665 mm, they got <strong>1.37 t/ha</strong>. That's a six-fold swing in one year.</p></div>
+        <div class="step" data-step="2"><p>Coastal rice is a different story. Its yield has basically <strong>no link</strong> with that year's rainfall (r = &minus;0.27, not significant). The delta is canal irrigated, so the water comes from the rivers and dams, not straight from the sky.</p></div>
+      </div>
+    </section>
+
+    <section class="conclusion">
+      <blockquote>Irrigation is what separates the two regions. A rain-fed Rayalaseema farmer carries the full risk of a bad monsoon; a delta farmer mostly doesn't.</blockquote>
+      <div class="facts">
+        <div><span class="big num" data-to="117">117</span><span class="fact-label">years of rainfall</span></div>
+        <div><span class="big num" data-to="18">18</span><span class="fact-label">deficient years in Rayalaseema</span></div>
+        <div><span class="big num" data-to="0.77" data-dec="2">0.77</span><span class="fact-label">rain vs groundnut yield (r)</span></div>
+        <div><span class="big num" data-to="6" data-suffix="x">6x</span><span class="fact-label">yield swing, 2007 vs 2008</span></div>
+      </div>
+    </section>
+
+    <section class="methods prose" id="methods">
+      <h2>How I did it</h2>
+      <p>Everything is in a Jupyter notebook with pandas, SciPy and seaborn. The charts on this page are drawn with D3 from a small JSON file that <code>scripts/build_story_data.py</code> makes from the same data, so the numbers match the notebook.</p>
+      <ul>
+        <li><strong>Cleaning.</strong> The crop file had 61 "Whole Year" rows that were just Kharif + Rabi added together (mostly 2013&ndash;14), which made 2014 rice look double. I removed them, plus 67 rows with no production value.</li>
+        <li><strong>Deficient / excess years</strong> follow the IMD rule: more than 20% below or above the long-term mean of that sub-division.</li>
+        <li><strong>Trend</strong> is a simple linear regression of annual rainfall on year. <strong>Correlations</strong> are Pearson's r between yearly yield (production &divide; area) and rainfall.</li>
+      </ul>
+      <h2>Limits</h2>
+      <ul>
+        <li>The crop data covers only 18 years (1997&ndash;2014), so each correlation is based on 18 points.</li>
+        <li>Rainfall is at sub-division level, not district level.</li>
+        <li>Correlation is not causation. Prices, pests, seed and the area sown also move yield.</li>
+      </ul>
+      <p class="links"><a href="notebook.html">Read the full notebook with code &rarr;</a> <a href="https://github.com/Tejdeep-67/ap-rainfall-crop-analysis">Code on GitHub &rarr;</a></p>
+      <h2>Data</h2>
+      <p class="credits">Rainfall: India Meteorological Department, <em>Sub-divisional monthly rainfall 1901&ndash;2017</em>, via data.gov.in (Government Open Data License &ndash; India). Crops: Ministry of Agriculture &amp; Farmers Welfare, <em>District-wise season-wise crop production statistics</em>, via data.gov.in. District boundaries: Census 2011 districts by <a href="https://github.com/datameet/maps">DataMeet India community</a> (CC BY 4.0), simplified, 13 present-day AP districts only.</p>
+    </section>
+  </main>
+
+  <footer class="foot">Tejdeep Kellampalli &middot; B.Tech CSE (Data Science), RVR &amp; JC College of Engineering, Guntur</footer>
+  <div class="tooltip" id="tip" role="status" aria-live="polite"></div>
+</body>
+</html>
