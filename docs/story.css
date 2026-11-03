@@ -45,6 +45,17 @@ a:hover { color: var(--terra); }
 .fields path:nth-child(2) { animation-duration: 18s; animation-direction: alternate-reverse; }
 .fields path:nth-child(3) { animation: none; }
 @keyframes drift { from { transform: translateX(-1.5%) scaleY(1); } to { transform: translateX(1.5%) scaleY(1.08); } }
+.masthead {
+  position: absolute; top: 22px; left: 28px; z-index: 3; display: flex; align-items: center; gap: 10px;
+  color: var(--paper); text-decoration: none; font: 600 12px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; opacity: .9;
+}
+.masthead:hover { opacity: 1; }
+.masthead svg { width: 22px; height: 32px; }
+.masthead .drop { fill: var(--paper); }
+.masthead .stem { stroke: var(--terra); stroke-width: 3.2; stroke-linecap: round; }
+.masthead .leaf { fill: var(--terra); }
+.masthead em { font-family: var(--display); font-style: italic; text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--sky); }
+@media (max-width: 600px) { .masthead { top: 16px; left: 18px; font-size: 11px; } }
 .hero-inner { position: relative; z-index: 2; max-width: 860px; padding: 0 28px; text-align: center; }
 .kicker { font-family: var(--sans); text-transform: uppercase; letter-spacing: .22em; font-size: 13px; color: #cfe0ea; margin: 0 0 18px; opacity: 0; animation: rise .9s .1s var(--ease) forwards; }
 .hero h1 {
