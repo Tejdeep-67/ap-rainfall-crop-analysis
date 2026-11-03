@@ -112,3 +112,7 @@ The site is deployed on Netlify straight from the `docs/` folder (see `netlify.t
 - Crop data stops at 2014 and covers only 18 years, so the correlations are based on 18 points.
 - Rainfall is at sub-division level, not district level.
 - Correlation is not causation. Prices, pests and seed quality also affect yield.
+
+## License
+
+MIT for the code, see [LICENSE](LICENSE). The rainfall and crop datasets keep their original terms (sources listed above).
